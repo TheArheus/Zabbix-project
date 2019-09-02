@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.dataTables.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/dataTables.bootstrap.css') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/gijgo.js') }}" type="text/javascript"></script>
+    <link href="{{ url_for('static', filename='css/gijgo.css') }}" rel="stylesheet" type="text/css" />
+
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <script>
+        function filterGlobal () {
+            $('#search_res').DataTable().search(
+                $('#global_filter').val(),
+                $('#global_regex').prop('checked'),
+                $('#global_smart').prop('checked')
+            ).draw();
+        }
+
+        function filterColumn ( i ) {
+            $('#search_res').DataTable().column( i ).search(
+                $('#col'+i+'_filter').val(),
+                $('#col'+i+'_regex').prop('checked'),
+                $('#col'+i+'_smart').prop('checked')
+            ).draw();
+        }
+
+        $(document).ready(function() {
+            $('#search_res').DataTable({
+            stateSave: true
+            });
+
+            $('input.global_filter').on( 'keyup click', function () {
+                filterGlobal();
+            } );
+
+            $('input.column_filter').on( 'keyup click', function () {
+                filterColumn( $(this).parents('tr').attr('data-column') );
+            } );
+        } );
+    </script>
+    <script>
+        $('.dropdown-toggle').dropdown('toggle')
+    </script>
+</head>
+<body>
+    {% block content %}
+    <div class="col-md-12" font-size="12px">
+                <div class="row">
+		                <div class="col">
+		                	<div class="card">
+			                	<div class="card-heading card-heading-sm">
+				                	<button class="btn btn-default btn-sm btn-block" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="multiCollapseExample2">Host Items</button>
+				                </div>
+			                    <div class="collapse multi-collapse" id="collapse1">
+			                    	<div class="card-body card-body-sm">
+				                        <form action="" method="post">
+				                        {{ form.hidden_tag() }}
+				                            <p>
+				                                <div class="container">
+				                                    <div class="form-group form-group-sm input-group-sm row">
+				                                        <div class="form-group form-group-sm input-group-sm">
+				                                            {{ select_form.host_group(class="form-control input-sm") }}
+				                                        </div>
+
+				                                        <div class="col form-group form-group-sm input-group-sm">
+				                                            <p class="form-group form-group-sm input-group-sm">
+				                                            	{{ form.host_name(size=32, class="form-control input-sm", placeholder= form.host_name.label.text, value=val2) }}
+					                                            {% for error in form.host_name.errors %}
+					                                            <span style="color: red;">[{{ error }}]</span>
+					                                            {% endfor %}
+				                                            </p>
+
+				                                            <p class="form-group form-group-sm input-group-sm">
+				                                            	{{ form.key(size=32, class="form-control input-sm", placeholder= form.key.label.text, value=val3) }}
+					                                            {% for error in form.key.errors %}
+					                                            <span style="color: red;">[{{ error }}]</span>
+					                                            {% endfor %}
+				                                            </p>
+				                                        </div>
+				                                    </div>
+				                                    <div class="form-group form-group-sm input-group-sm row">
+					                                    <div class="row">
+					                                        <div class="col">
+					                                        	{{ form.date_from(class="form-control", placeholder=form.date_from.label.text, value=val4) }}
+						                                        <script>
+						                                            $('#date_from').datepicker({
+						                                                uiLibrary: 'bootstrap4', size: 'small', firstDay: 1
+						                                            });
+						                                        </script>
+						                                        {% for error in form.date_from.errors %}
+						                                        <span style="color: red;">[{{ error }}]</span>
+						                                        {% endfor %}
+					                                        </div>
+					                                        <div class="col">
+					                                        	{{ form.date_till(class="form-control", placeholder=form.date_till.label.text, value=val3) }}
+						                                        <script>
+						                                            $('#date_till').datepicker({
+						                                                uiLibrary: 'bootstrap4', size: 'small', firstDay: 1
+						                                            });
+						                                        </script>
+						                                        {% for error in form.date_till.errors %}
+						                                        <span style="color: red;">[{{ error }}]</span>
+						                                        {% endfor %}
+					                                        </div>
+					                                    </div>
+					                                </div>
+				                                </div>
+				                            </p>
+				                            <p><div class="form-group">{{ form.srch(class='btn btn-default btn-sm') }}</div></p>
+				                        </form>
+				                    </div>
+			                    </div>
+			                </div>
+		                </div>
+		                <div class="col">
+			                <div class="card">
+			                	<div class="card-heading card-heading-sm">
+			                		<button class="btn btn-default btn-sm btn-block" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="multiCollapseExample2">Table Filter</button>
+			                	</div>
+			                    <div class="collapse multi-collapse" id="collapse2">
+			                    	<div class="card-body-sm">
+				                    	<table id="filter" class="table table-sm compact nowrap input-group-sm">
+				                        	<thead>
+					                            <tr>
+					                                <th>Target</th>
+					                                <th>Search text</th>
+					                                <th>Treat as regex</th>
+					                                <th>Use smart search</th>
+					                            </tr>
+					                        </thead>
+					                        <tbody>
+					                            <tr id="filter_global" class="input-group-sm">
+					                                <td>Global search</td>
+					                                <td align="center" class="input-group-sm"><input class="global_filter form-control input-sm" id="global_filter" type="text"></td>
+					                                <td align="center" class="input-group-sm"><input class="global_filter" id="global_regex" type="checkbox"></td>
+					                                <td align="center" class="input-group-sm"><input class="global_filter" id="global_smart" checked="checked" type="checkbox"></td>
+					                            </tr>
+					                            <tr id="filter_col1" data-column="0" class="input-group-sm">
+					                                <td>Column - Item id</td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter form-control inputp-sm" id="col0_filter" type="text"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col0_regex" type="checkbox"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col0_smart" checked="checked" type="checkbox"></td>
+					                            </tr>
+					                            <tr id="filter_col2" data-column="1" class="input-group-sm">
+					                                <td>Column - Host</td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter form-control input-sm" id="col1_filter" type="text"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col1_regex" type="checkbox"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col1_smart" checked="checked" type="checkbox"></td>
+					                            </tr>
+					                            <tr id="filter_col3" data-column="2" class="input-group-sm">
+					                                <td>Column - Item key</td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter form-control input-sm" id="col2_filter" type="text"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col2_regex" type="checkbox"></td>
+					                                <td align="center" class="input-group-sm"><input class="column_filter" id="col2_smart" checked="checked" type="checkbox"></td>
+					                            </tr>
+					                        </tbody>
+					                    </table>
+				                    </div>
+			                    </div>
+			                </div>
+		                </div>
+		        </div>
+            
+            
+
+        <div class="input-group-sm">
+            <table id="search_res" class="table table-striped table-bordered table-sm compact nowrap input-group-sm">
+                <thead>
+                    <tr> 
+                        <th>Item id</th>
+                        <th>Host</th>
+                        <th>Item key</th> 
+                        <th>Average value</th> 
+                        <th>Maximum value</th> 
+                        <th>Minimum value</th> 
+                    </tr> 
+                </thead>
+                <tbody>
+                    {% for k in keys %}
+                        {% for h in hosts %}
+                            {% for v in values %}
+                                {% if k['itemid'] == v['itemid'] %}
+                                    {% if h['hostid'] == k['hostid'] %}
+                                        <tr>
+                                            <td>{{v['itemid']}}</td>
+                                            <td>{{h['host']}}</td>
+                                            <td>{{k['key_']}}</td>
+                                            <td>{{v['value_avg']}}</td>
+                                            <td>{{v['value_max']}}</td>
+                                            <td>{{v['value_min']}}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% endblock %}
+    <script>
+        window.onbeforeunload = function() {
+            localStorage.setItem(groups, {{select_form.host_group.data}});
+            localStorage.setItem(hostname, {{form.host_name}});
+            localStorage.setItem(hostkey, {{form.key}});
+            localStorage.setItem(from, {{form.date_from}});
+            localStorage.setItem(till, {{form.date_till}});
+        }
+
+        window.onunload = function() {
+            localStorage.setItem(groups, {{select_form.host_group}});
+            localStorage.setItem(hostname, {{form.host_name}});
+            localStorage.setItem(hostkey, {{form.key}});
+            localStorage.setItem(from, {{form.date_from}});
+            localStorage.setItem(till, {{form.date_till}});
+        }
+
+        window.onload = function() {
+
+            var group_names_ = localStorage.getItem(groups);
+            if (group_names_ !== null) {{select_form.host_group(value=group_names_)}};
+
+            var host_name_ = localStorage.getItem(hostname);
+            if (host_name_ !== null) {{form.host_name(value=host_name_)}};
+
+            var key_ = localStorage.getItem(hostkey);
+            if (key_ !== null) {{form.key(value=key_)}};
+
+            var date_from_ = localStorage.getItem(from);
+            if (date_from_ !== null) {{form.date_from(value=date_from_)}};
+
+            var date_till_ = localStorage.getItem(till);
+            if (date_till_ !== null) {{form.date_till(value=date_till_)}};
+        }
+    </script>
+</body>
+</html>
